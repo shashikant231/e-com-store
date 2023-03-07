@@ -14,17 +14,17 @@ type mysqlStoreRepository struct {
 }
 
 // SyncCategory...
-func (m *mysqlStoreRepository) IsCategoryExist(category domain.Category) (exist bool, err error) {
+func (m *mysqlStoreRepository) IsCategoryExist(categoryID string) (exist bool, err error) {
 	var existingCategory domain.Category
 	err = m.db.WithContext(context.Background()).
-		Where("category_id = ?", category.CategoryID).
+		Where("id = ?", categoryID).
 		First(&existingCategory).
 		Error
 
 	if errors.Is(err, gorm.ErrRecordNotFound) {
-		return false, err
+		return false, nil
 	}
-	return true, nil
+	return true, err
 }
 
 // AddCategory

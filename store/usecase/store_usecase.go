@@ -3,6 +3,7 @@ package usecase
 import (
 	"e-commerce-store/domain"
 	"encoding/json"
+	"fmt"
 	"net/http"
 )
 
@@ -13,17 +14,31 @@ type StoreUseCase struct {
 
 // SyncCategory ...
 func (s *StoreUseCase) SyncCategory(limit string, page string) (err error) {
-	resp, err := http.Get("https://stageapi.monkcommerce.app/task/categories?limit=" + limit + "&" + "page=" + page)
+	url := "https://stageapi.monkcommerce.app/task/categories?limit=" + limit + "&" + "page=" + page
+	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
-		return err
+		fmt.Println("Error creating request:", err)
+		return
 	}
+	req.Header.Set("x-api-key", "s72rash8762s31")
+	// Use the http.Client to send the request and retrieve the response
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		fmt.Println("Error sending request:", err)
+		return
+	}
+	defer resp.Body.Close()
+
 	err = json.NewDecoder(resp.Body).Decode(&domain.CategoriesResponse)
 	if err != nil {
-		return err
+		fmt.Println("Error decoding response:", err)
+		return
 	}
 	// var categories []domain.Category
 	for _, category := range domain.CategoriesResponse.Categories {
-		exist, err := s.storeRepo.IsCategoryExist(category)
+		fmt.Println(category.Name)
+		exist, err := s.storeRepo.IsCategoryExist(category.ID)
 		if err != nil {
 			return err
 		}

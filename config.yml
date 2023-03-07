@@ -1,0 +1,13 @@
+# DB CONFIG
+DB_TYPE: "mysql"
+DB_USERNAME: "root"
+DB_PASSWORD: ""
+DB_NAME: "e-store"
+DB_HOST: "localhost"
+DB_HOST_WRITE: ""
+DB_HOST_READ: ""
+DB_PORT: "3306"
+
+
+
+APPLICATION_PORT: "8081"
