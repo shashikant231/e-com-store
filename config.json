@@ -1,0 +1,19 @@
+{
+    "debug": true,
+    "server": {
+      "address": ":9090"
+    },
+    "context":{
+      "timeout":2
+    },
+    "database": {
+        "host": "localhost",
+        "port": "3306",
+        "user": "root",
+        "pass": "",
+        "name": "e-store",
+        "network-type" : "tcp"
+    },
+    "APPLICATION_PORT": 8081
+  
+  }
