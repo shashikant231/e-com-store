@@ -36,6 +36,29 @@ func (m *mysqlStoreRepository) AddCategory(category domain.Category) (err error)
 	return
 }
 
+// SyncProduct...
+func (m *mysqlStoreRepository) IsProductExist(sku int64) (exist bool, err error) {
+	var existingProduct domain.Product
+	err = m.db.WithContext(context.Background()).
+		Where("sku = ?", sku).
+		First(&existingProduct).
+		Error
+
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		return false, nil
+	}
+	return true, domain.DuplicateProductError
+}
+
+// AddProduct
+func (m *mysqlStoreRepository) AddProduct(products []domain.Product) (err error) {
+	err = m.db.Create(&products).Error
+	if err != nil {
+		return err
+	}
+	return
+}
+
 // NewMysqlStoreRepository creates an object that represents the store.repository interface
 func NewMysqlStoreRepository(db *gorm.DB) domain.StoreRepository {
 	return &mysqlStoreRepository{

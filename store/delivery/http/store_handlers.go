@@ -21,7 +21,8 @@ func NewStoreHandler(e *echo.Echo, us domain.StoreUseCase) {
 		StoreUsecase: us,
 	}
 
-	e.GET("/sync", handler.SyncCategory)
+	e.GET("/syncCategory", handler.SyncCategory)
+	e.GET("/syncProduct", handler.SyncProduct)
 	// e.GET("/shop/categories",handler.GetCategories)
 }
 
@@ -35,16 +36,24 @@ func (s *StoreHandler) SyncCategory(c echo.Context) error {
 		return c.JSON(http.StatusInternalServerError, "Internal server error")
 	}
 
-	return c.JSON(http.StatusOK, "Succesfully updated")
+	return c.JSON(http.StatusOK, echo.Map{
+		"message": "Categories fetched and stored successfully",
+	})
 }
 
-// func (s *StoreHandler) GetCategories(c echo.Context) error{
-// 	limit := c.QueryParam("limit")
-// 	page := c.QueryParam("page")
-// 	err := s.StoreUsecase.GetCategories(limit, page)
-// 	if err != nil {
-// 		return c.JSON(http.StatusInternalServerError, "Internal server error")
-// 	}
+func (s *StoreHandler) SyncProduct(c echo.Context) error {
+	limit := c.QueryParam("limit")
+	page := c.QueryParam("page")
+	id := c.QueryParam("categoryID")
 
-// 	return c.JSON(http.StatusOK, "Succesfully updated")
-// }
+	err := s.StoreUsecase.SyncProduct(limit, page, id)
+	if err != nil && err == domain.DuplicateProductError {
+		return c.JSON(http.StatusInternalServerError, domain.DuplicateProductError)
+	} else if err != nil {
+		return c.JSON(http.StatusInternalServerError, "Internal server error")
+	}
+
+	return c.JSON(http.StatusOK, echo.Map{
+		"message": "Products fetched and stored successfully",
+	})
+}

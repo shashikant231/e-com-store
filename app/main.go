@@ -52,7 +52,7 @@ func main() {
 
 	fmt.Println("Connected to database!")
 	// Auto-migrate database
-	err = dbConn.AutoMigrate(&domain.Category{})
+	err = dbConn.AutoMigrate(&domain.Category{}, &domain.Product{})
 	if err != nil {
 		panic(err)
 	}
