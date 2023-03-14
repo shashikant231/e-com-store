@@ -20,7 +20,6 @@ func (s *StoreUseCase) Sync() (err error) {
 	for {
 		req, err := http.NewRequest("GET", fmt.Sprintf(url, pages), nil)
 		if err != nil {
-			fmt.Println("Error creating request:", err)
 			return err
 		}
 		req.Header.Set("x-api-key", "s72rash8762s31")
@@ -28,15 +27,13 @@ func (s *StoreUseCase) Sync() (err error) {
 		client := &http.Client{}
 		resp, err := client.Do(req)
 		if err != nil {
-			fmt.Println("Error sending request:", err)
 			return err
 		}
 		defer resp.Body.Close()
 		var categoriesResponse domain.CategoriesResponse
 		err = json.NewDecoder(resp.Body).Decode(&categoriesResponse)
 		if err != nil {
-			fmt.Println("Error decoding response:", err)
-			return err
+			return domain.CategoryDecodingError
 		}
 		for _, category := range categoriesResponse.Categories {
 			exist, err := s.storeRepo.IsCategoryExist(category.ID)
@@ -50,7 +47,6 @@ func (s *StoreUseCase) Sync() (err error) {
 			productUrl := fmt.Sprintf("https://stageapi.monkcommerce.app/task/products?limit=100&page=%d&categoryID=%s", 1, category.ID)
 			req, err := http.NewRequest("GET", productUrl, nil)
 			if err != nil {
-				fmt.Println("Error creating request:", err)
 				return err
 			}
 			req.Header.Set("x-api-key", "s72rash8762s31")
@@ -58,7 +54,6 @@ func (s *StoreUseCase) Sync() (err error) {
 			client := &http.Client{}
 			resp, err := client.Do(req)
 			if err != nil {
-				fmt.Println("Error sending request:", err)
 				return err
 			}
 			defer resp.Body.Close()
@@ -66,8 +61,7 @@ func (s *StoreUseCase) Sync() (err error) {
 			var productsRequest domain.ProductsRequest
 			err = json.Unmarshal(bodyBytes, &productsRequest)
 			if err != nil {
-				fmt.Println("eRROR WHILE DECODING")
-				return err
+				return domain.ProductDecodingError
 			}
 			if len(productsRequest.Products) == 0 {
 				continue

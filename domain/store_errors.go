@@ -15,3 +15,9 @@ var DuplicateProductError = ErrorDetails{Code: "duplicateProductError", Descript
 
 // DuplicateCategoryError is used for storing error when Category is already in database
 var DuplicateCategoryError = ErrorDetails{Code: "duplicateCategoryError", Description: "Given Category is already in database"}
+
+// CategoryDecodingError is error when there is error while decoding categories data
+var CategoryDecodingError = ErrorDetails{Code: "categoryDecodingError", Description: "Error while decoding categories data"}
+
+// ProductDecodingError is error when there is error while decoding products data
+var ProductDecodingError = ErrorDetails{Code: "productDecodingError", Description: "Error while decoding products data"}

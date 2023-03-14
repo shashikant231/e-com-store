@@ -6,11 +6,20 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
+// Default represents default limits for different response types
+var Default = map[string]string{
+	"limit": "1",
+	"page":  "1",
+}
+
 // GetLimit a method to get Limit from query params
 func GetLimit(c echo.Context) (limit uint, err error) {
 
-	idString := c.QueryParam("limit")
-	uintID, err := strconv.ParseUint(idString, 10, 64)
+	limitString := c.QueryParam("limit")
+	if len(limitString) == 0 {
+		limitString = Default["limit"]
+	}
+	uintID, err := strconv.ParseUint(limitString, 10, 64)
 	if err != nil {
 		return
 	}
@@ -22,8 +31,11 @@ func GetLimit(c echo.Context) (limit uint, err error) {
 // GetPage a method to get Page from query params
 func GetPage(c echo.Context) (page uint, err error) {
 
-	idString := c.QueryParam("page")
-	uintID, err := strconv.ParseUint(idString, 10, 64)
+	pageString := c.QueryParam("page")
+	if len(pageString) == 0 {
+		pageString = Default["page"]
+	}
+	uintID, err := strconv.ParseUint(pageString, 10, 64)
 	if err != nil {
 		return
 	}

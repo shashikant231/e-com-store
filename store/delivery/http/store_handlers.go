@@ -2,6 +2,7 @@ package http
 
 import (
 	"e-commerce-store/domain"
+	"fmt"
 	"net/http"
 
 	// "e-commerce-store/store/delivery/http"
@@ -34,6 +35,10 @@ func (s *StoreHandler) Sync(c echo.Context) error {
 		return c.JSON(http.StatusInternalServerError, domain.DuplicateProductError)
 	} else if err != nil && err == domain.DuplicateCategoryError {
 		return c.JSON(http.StatusInternalServerError, domain.DuplicateCategoryError)
+	} else if err != nil && err == domain.ProductDecodingError {
+		return c.JSON(http.StatusInternalServerError, domain.ProductDecodingError)
+	} else if err != nil && err == domain.CategoryDecodingError {
+		return c.JSON(http.StatusInternalServerError, domain.CategoryDecodingError)
 	}
 
 	return c.JSON(http.StatusOK, echo.Map{
@@ -51,6 +56,7 @@ func (s *StoreHandler) GetCategories(c echo.Context) error {
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, err)
 	}
+	fmt.Println(limit, page)
 	categories, err := s.StoreUsecase.GetCategories(limit, page)
 	if err != nil {
 		return err
