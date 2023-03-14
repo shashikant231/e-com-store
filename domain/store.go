@@ -16,28 +16,27 @@ type Image struct {
 	ProductSKU int64  `json:"-" gorm:"column:product_sku"`
 }
 
-type ImageResonse struct {
+type ImageResponse struct {
 	Href string `json:"href"`
 }
 
 // ProductResponse represents a response of product entity.
 type ProductResponse struct {
-	SKU                 int64          `json:"sku" gorm:"primarykey;column:sku"`
-	Name                string         `json:"name" gorm:"column:name"`
-	SalePrice           float64        `json:"salePrice" gorm:"column:salePrice"`
-	Images              []ImageResonse `json:"images"`
-	Digital             bool           `json:"digital"`
-	ShippingCost        int64          `json:"shippingCost" gorm:"column:shippingCost"`
-	Description         *string        `json:"description"`
-	CustomerReviewCount *int           `json:"customerReviewCount" gorm:"column:customerReviewCount"`
+	SKU                 int64           `json:"sku" gorm:"primarykey;column:sku"`
+	Name                string          `json:"name" gorm:"column:name"`
+	SalePrice           float64         `json:"salePrice" gorm:"column:salePrice"`
+	Images              []ImageResponse `json:"images"`
+	Digital             bool            `json:"digital"`
+	ShippingCost        int64           `json:"shippingCost" gorm:"column:shippingCost"`
+	Description         *string         `json:"description"`
+	CustomerReviewCount *int            `json:"customerReviewCount" gorm:"column:customerReviewCount"`
 }
 
 // Product represents a product entity.
 type Product struct {
-	SKU       int64   `json:"sku" gorm:"primarykey;column:sku"`
-	Name      string  `json:"name" gorm:"column:name"`
-	SalePrice float64 `json:"salePrice" gorm:"column:salePrice"`
-	// Images              []Image `json:"images" gorm:"foreignKey:ProductSKU"`
+	SKU                 int64   `json:"sku" gorm:"primarykey;column:sku"`
+	Name                string  `json:"name" gorm:"column:name"`
+	SalePrice           float64 `json:"salePrice" gorm:"column:salePrice"`
 	Digital             bool    `json:"digital"`
 	CategoryID          string  `json:"category_id" gorm:"column:category_id"`
 	ShippingCost        int64   `json:"shippingCost" gorm:"column:shippingCost"`
@@ -50,12 +49,12 @@ func (Product) TableName() string {
 }
 
 // CategoriesResponse represent the response for Category
-var CategoriesResponse struct {
+type CategoriesResponse struct {
 	Page       int        `json:"page"`
 	Categories []Category `json:"categories"`
 }
 
-var ProductsResponse struct {
+type ProductsResponse struct {
 	Page     int               `json:"page"`
 	Products []ProductResponse `json:"products"`
 }
@@ -63,6 +62,7 @@ var ProductsResponse struct {
 // StoreUseCase interface - business process handeler
 type StoreUseCase interface {
 	Sync() (err error)
+	GetCategories(limit uint, page uint) (categoriesResponse CategoriesResponse, err error)
 }
 
 // StoreRepository interface - Crud operation
@@ -71,4 +71,5 @@ type StoreRepository interface {
 	AddCategory(category Category) (err error)
 	IsProductExist(sku int64) (exist bool, err error)
 	AddProduct(products []Product) (err error)
+	GetCategories(limit uint, page uint) (categories []Category, err error)
 }

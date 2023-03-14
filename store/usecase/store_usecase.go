@@ -16,7 +16,6 @@ type StoreUseCase struct {
 // Sync ...
 func (s *StoreUseCase) Sync() (err error) {
 	url := "https://stageapi.monkcommerce.app/task/categories?limit=100&page=%d"
-	// url := "https://stageapi.monkcommerce.app/task/categories?limit=" + "100" + "&" + "page=" + %pages
 	pages := 1
 	for {
 		req, err := http.NewRequest("GET", fmt.Sprintf(url, pages), nil)
@@ -33,13 +32,13 @@ func (s *StoreUseCase) Sync() (err error) {
 			return err
 		}
 		defer resp.Body.Close()
-		err = json.NewDecoder(resp.Body).Decode(&domain.CategoriesResponse)
+		var categoriesResponse domain.CategoriesResponse
+		err = json.NewDecoder(resp.Body).Decode(&categoriesResponse)
 		if err != nil {
 			fmt.Println("Error decoding response:", err)
 			return err
 		}
-		// var categories []domain.Category
-		for _, category := range domain.CategoriesResponse.Categories {
+		for _, category := range categoriesResponse.Categories {
 			exist, err := s.storeRepo.IsCategoryExist(category.ID)
 			if err != nil {
 				return err
@@ -64,23 +63,24 @@ func (s *StoreUseCase) Sync() (err error) {
 			}
 			defer resp.Body.Close()
 			bodyBytes, _ := ioutil.ReadAll(resp.Body)
-			if len(domain.ProductsResponse.Products) == 0 {
+			var productsResponse domain.ProductsResponse
+			err = json.Unmarshal(bodyBytes, &productsResponse)
+			if err != nil {
+				fmt.Println("eRROR WHILE DECODING")
+				return err
+			}
+			if len(productsResponse.Products) == 0 {
 				continue
 			}
 
-			err = json.Unmarshal(bodyBytes, &domain.ProductsResponse)
-			if err != nil {
-				fmt.Println("eRROR WHILE DECODING")
-			}
-
-			for _, product := range domain.ProductsResponse.Products {
+			for _, product := range productsResponse.Products {
 				_, err := s.storeRepo.IsProductExist(product.SKU)
 				if err != nil {
 					return err
 				}
 			}
 			var products []domain.Product
-			for _, product := range domain.ProductsResponse.Products {
+			for _, product := range productsResponse.Products {
 				products = append(products, domain.Product{
 					SKU:                 product.SKU,
 					Name:                product.Name,
@@ -97,11 +97,22 @@ func (s *StoreUseCase) Sync() (err error) {
 				return err
 			}
 		}
-		if len(domain.CategoriesResponse.Categories) == 0 {
+		if len(categoriesResponse.Categories) == 0 {
 			return err
 		}
 		pages++
 	}
+}
+
+// GetCategories
+func (s *StoreUseCase) GetCategories(limit uint, page uint) (categoriesResponse domain.CategoriesResponse, err error) {
+	categories, err := s.storeRepo.GetCategories(limit, page)
+	categoriesResponse = domain.CategoriesResponse{
+		Page:       int(page),
+		Categories: categories,
+	}
+
+	return
 }
 
 // NewStoreUseCase creates will create new an Storeusecase object representation of domain.StoreUsecase interface

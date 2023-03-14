@@ -21,7 +21,7 @@ func NewStoreHandler(e *echo.Echo, us domain.StoreUseCase) {
 	}
 
 	e.GET("/sync", handler.Sync)
-	// e.GET("/shop/categories",handler.GetCategories)
+	e.GET("/shop/categories", handler.GetCategories)
 }
 
 // Sync to sync the catalog and product data.
@@ -38,4 +38,21 @@ func (s *StoreHandler) Sync(c echo.Context) error {
 	return c.JSON(http.StatusOK, echo.Map{
 		"message": "Catalog data fetched and stored successfully",
 	})
+}
+
+// GetCategories to retrieve the categories
+func (s *StoreHandler) GetCategories(c echo.Context) error {
+	limit, err := GetLimit(c)
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, err)
+	}
+	page, err := GetPage(c)
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, err)
+	}
+	categories, err := s.StoreUsecase.GetCategories(limit, page)
+	if err != nil {
+		return err
+	}
+	return c.JSON(http.StatusOK, categories)
 }
