@@ -12,3 +12,6 @@ func (e ErrorDetails) Error() string {
 
 // DuplicateProductError is used for storing error when product is already in database
 var DuplicateProductError = ErrorDetails{Code: "duplicateProductError", Description: "Given product is already in database"}
+
+// DuplicateCategoryError is used for storing error when Category is already in database
+var DuplicateCategoryError = ErrorDetails{Code: "duplicateCategoryError", Description: "Given Category is already in database"}

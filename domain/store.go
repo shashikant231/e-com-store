@@ -62,8 +62,7 @@ var ProductsResponse struct {
 
 // StoreUseCase interface - business process handeler
 type StoreUseCase interface {
-	SyncCategory(limit string, page string) (err error)
-	SyncProduct(limit, page, id string) (err error)
+	Sync() (err error)
 }
 
 // StoreRepository interface - Crud operation

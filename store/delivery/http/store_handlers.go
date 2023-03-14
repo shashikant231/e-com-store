@@ -2,7 +2,6 @@ package http
 
 import (
 	"e-commerce-store/domain"
-	"fmt"
 	"net/http"
 
 	// "e-commerce-store/store/delivery/http"
@@ -21,39 +20,22 @@ func NewStoreHandler(e *echo.Echo, us domain.StoreUseCase) {
 		StoreUsecase: us,
 	}
 
-	e.GET("/syncCategory", handler.SyncCategory)
-	e.GET("/syncProduct", handler.SyncProduct)
+	e.GET("/sync", handler.Sync)
 	// e.GET("/shop/categories",handler.GetCategories)
 }
 
-// SyncCategory to sync the catalog and product data.
-func (s *StoreHandler) SyncCategory(c echo.Context) error {
-	fmt.Println("request aya")
-	limit := c.QueryParam("limit")
-	page := c.QueryParam("page")
-	err := s.StoreUsecase.SyncCategory(limit, page)
+// Sync to sync the catalog and product data.
+func (s *StoreHandler) Sync(c echo.Context) error {
+	err := s.StoreUsecase.Sync()
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, "Internal server error")
-	}
-
-	return c.JSON(http.StatusOK, echo.Map{
-		"message": "Categories fetched and stored successfully",
-	})
-}
-
-func (s *StoreHandler) SyncProduct(c echo.Context) error {
-	limit := c.QueryParam("limit")
-	page := c.QueryParam("page")
-	id := c.QueryParam("categoryID")
-
-	err := s.StoreUsecase.SyncProduct(limit, page, id)
-	if err != nil && err == domain.DuplicateProductError {
+	} else if err != nil && err == domain.DuplicateProductError {
 		return c.JSON(http.StatusInternalServerError, domain.DuplicateProductError)
-	} else if err != nil {
-		return c.JSON(http.StatusInternalServerError, "Internal server error")
+	} else if err != nil && err == domain.DuplicateCategoryError {
+		return c.JSON(http.StatusInternalServerError, domain.DuplicateCategoryError)
 	}
 
 	return c.JSON(http.StatusOK, echo.Map{
-		"message": "Products fetched and stored successfully",
+		"message": "Catalog data fetched and stored successfully",
 	})
 }

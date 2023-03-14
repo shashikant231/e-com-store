@@ -24,7 +24,7 @@ func (m *mysqlStoreRepository) IsCategoryExist(categoryID string) (exist bool, e
 	if errors.Is(err, gorm.ErrRecordNotFound) {
 		return false, nil
 	}
-	return true, err
+	return true, domain.DuplicateCategoryError
 }
 
 // AddCategory
