@@ -6,7 +6,7 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-// GetLimit a method to get deviceType from query params
+// GetLimit a method to get Limit from query params
 func GetLimit(c echo.Context) (limit uint, err error) {
 
 	idString := c.QueryParam("limit")
@@ -19,7 +19,7 @@ func GetLimit(c echo.Context) (limit uint, err error) {
 	return
 }
 
-// GetPage a method to get deviceType from query params
+// GetPage a method to get Page from query params
 func GetPage(c echo.Context) (page uint, err error) {
 
 	idString := c.QueryParam("page")

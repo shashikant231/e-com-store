@@ -78,6 +78,23 @@ func (m *mysqlStoreRepository) GetCategories(limit uint, page uint) (categories 
 
 }
 
+// GetProducts retrieve existing Products from database
+func (m *mysqlStoreRepository) GetProducts(limit uint, page uint, categoryID string) (products []domain.Product, err error) {
+	offset := (page - 1) * limit
+	err = m.db.Order("customerReviewCount desc").
+		Limit(int(limit)).
+		Offset(int(offset)).
+		Where("category_id = ?", categoryID).
+		Find(&products).
+		Error
+
+	if err != nil {
+		return
+	}
+	return
+
+}
+
 // NewMysqlStoreRepository creates an object that represents the store.repository interface
 func NewMysqlStoreRepository(db *gorm.DB) domain.StoreRepository {
 	return &mysqlStoreRepository{

@@ -16,20 +16,20 @@ type Image struct {
 	ProductSKU int64  `json:"-" gorm:"column:product_sku"`
 }
 
-type ImageResponse struct {
+type ImageRequest struct {
 	Href string `json:"href"`
 }
 
-// ProductResponse represents a response of product entity.
-type ProductResponse struct {
-	SKU                 int64           `json:"sku" gorm:"primarykey;column:sku"`
-	Name                string          `json:"name" gorm:"column:name"`
-	SalePrice           float64         `json:"salePrice" gorm:"column:salePrice"`
-	Images              []ImageResponse `json:"images"`
-	Digital             bool            `json:"digital"`
-	ShippingCost        int64           `json:"shippingCost" gorm:"column:shippingCost"`
-	Description         *string         `json:"description"`
-	CustomerReviewCount *int            `json:"customerReviewCount" gorm:"column:customerReviewCount"`
+// ProductRequest represents a Request of product entity.
+type ProductRequest struct {
+	SKU                 int64          `json:"sku" gorm:"primarykey;column:sku"`
+	Name                string         `json:"name" gorm:"column:name"`
+	SalePrice           float64        `json:"salePrice" gorm:"column:salePrice"`
+	Images              []ImageRequest `json:"images"`
+	Digital             bool           `json:"digital"`
+	ShippingCost        int64          `json:"shippingCost" gorm:"column:shippingCost"`
+	Description         *string        `json:"description"`
+	CustomerReviewCount *int           `json:"customerReviewCount" gorm:"column:customerReviewCount"`
 }
 
 // Product represents a product entity.
@@ -54,15 +54,21 @@ type CategoriesResponse struct {
 	Categories []Category `json:"categories"`
 }
 
+type ProductsRequest struct {
+	Page     int              `json:"page"`
+	Products []ProductRequest `json:"products"`
+}
+
 type ProductsResponse struct {
-	Page     int               `json:"page"`
-	Products []ProductResponse `json:"products"`
+	Page     int       `json:"page"`
+	Products []Product `json:"products"`
 }
 
 // StoreUseCase interface - business process handeler
 type StoreUseCase interface {
 	Sync() (err error)
 	GetCategories(limit uint, page uint) (categoriesResponse CategoriesResponse, err error)
+	GetProducts(limit uint, page uint, categoryID string) (productResponse ProductsResponse, err error)
 }
 
 // StoreRepository interface - Crud operation
@@ -72,4 +78,5 @@ type StoreRepository interface {
 	IsProductExist(sku int64) (exist bool, err error)
 	AddProduct(products []Product) (err error)
 	GetCategories(limit uint, page uint) (categories []Category, err error)
+	GetProducts(limit uint, page uint, categoryID string) (products []Product, err error)
 }
