@@ -30,6 +30,7 @@ func NewStoreHandler(e *echo.Echo, us domain.StoreUseCase) {
 func (s *StoreHandler) Sync(c echo.Context) error {
 	err := s.StoreUsecase.Sync()
 	if err != nil {
+		fmt.Println("ERR", err)
 		return c.JSON(http.StatusInternalServerError, "Internal server error")
 	} else if err != nil && err == domain.DuplicateProductError {
 		return c.JSON(http.StatusInternalServerError, domain.DuplicateProductError)
@@ -56,7 +57,6 @@ func (s *StoreHandler) GetCategories(c echo.Context) error {
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, err)
 	}
-	fmt.Println(limit, page)
 	categories, err := s.StoreUsecase.GetCategories(limit, page)
 	if err != nil {
 		return err

@@ -35,8 +35,7 @@ func init() {
 
 }
 func main() {
-	dsn := "root:@tcp(localhost:3306)/e-store?charset=utf8mb4&parseTime=True&loc=Local"
-	// dsn := fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%s sslmode=%s TimeZone=%s", dbHost, dbUser, dbPass, dbName, dbPort, "require", "Asia/Kolkata")
+	dsn := "root:@tcp(localhost:3306)/e-com-store?charset=utf8mb4&parseTime=True&loc=Local"
 	dbConn, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
 	if err != nil {
 		log.Error("err in database connection message", err)

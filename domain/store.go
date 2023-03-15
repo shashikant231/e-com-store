@@ -16,16 +16,16 @@ type Image struct {
 	ProductSKU int64  `json:"-" gorm:"column:product_sku"`
 }
 
-type ImageRequest struct {
+type ImageResonse struct {
 	Href string `json:"href"`
 }
 
-// ProductRequest represents a Request of product entity.
-type ProductRequest struct {
+// ProductResponse represents a response of product entity.
+type ProductResponse struct {
 	SKU                 int64          `json:"sku" gorm:"primarykey;column:sku"`
 	Name                string         `json:"name" gorm:"column:name"`
 	SalePrice           float64        `json:"salePrice" gorm:"column:salePrice"`
-	Images              []ImageRequest `json:"images"`
+	Images              []ImageResonse `json:"images"`
 	Digital             bool           `json:"digital"`
 	ShippingCost        int64          `json:"shippingCost" gorm:"column:shippingCost"`
 	Description         *string        `json:"description"`
@@ -52,11 +52,6 @@ func (Product) TableName() string {
 type CategoriesResponse struct {
 	Page       int        `json:"page"`
 	Categories []Category `json:"categories"`
-}
-
-type ProductsRequest struct {
-	Page     int              `json:"page"`
-	Products []ProductRequest `json:"products"`
 }
 
 type ProductsResponse struct {

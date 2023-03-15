@@ -35,6 +35,7 @@ func (s *StoreUseCase) Sync() (err error) {
 		if err != nil {
 			return domain.CategoryDecodingError
 		}
+		// var categories []domain.Category
 		for _, category := range categoriesResponse.Categories {
 			exist, err := s.storeRepo.IsCategoryExist(category.ID)
 			if err != nil {
@@ -58,23 +59,25 @@ func (s *StoreUseCase) Sync() (err error) {
 			}
 			defer resp.Body.Close()
 			bodyBytes, _ := ioutil.ReadAll(resp.Body)
-			var productsRequest domain.ProductsRequest
-			err = json.Unmarshal(bodyBytes, &productsRequest)
+			var productsResponse domain.ProductsResponse
+
+			err = json.Unmarshal(bodyBytes, &productsResponse)
 			if err != nil {
-				return domain.ProductDecodingError
+				// DO NOTHING
+
 			}
-			if len(productsRequest.Products) == 0 {
+			if len(productsResponse.Products) == 0 {
 				continue
 			}
 
-			for _, product := range productsRequest.Products {
+			for _, product := range productsResponse.Products {
 				_, err := s.storeRepo.IsProductExist(product.SKU)
 				if err != nil {
 					return err
 				}
 			}
 			var products []domain.Product
-			for _, product := range productsRequest.Products {
+			for _, product := range productsResponse.Products {
 				products = append(products, domain.Product{
 					SKU:                 product.SKU,
 					Name:                product.Name,
@@ -112,9 +115,16 @@ func (s *StoreUseCase) GetCategories(limit uint, page uint) (categoriesResponse 
 // GetProducts retrieve existing Products in database
 func (s *StoreUseCase) GetProducts(limit uint, page uint, categoryID string) (productsResponse domain.ProductsResponse, err error) {
 	products, err := s.storeRepo.GetProducts(limit, page, categoryID)
-	productsResponse = domain.ProductsResponse{
-		Page:     int(page),
-		Products: products,
+	if len(products) > 0 {
+		productsResponse = domain.ProductsResponse{
+			Page:     int(page),
+			Products: products,
+		}
+	} else {
+		productsResponse = domain.ProductsResponse{
+			Page:     int(page),
+			Products: nil,
+		}
 	}
 
 	return
